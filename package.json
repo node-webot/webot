@@ -1,0 +1,27 @@
+{
+  "name": "webot",
+  "version": "0.1.0",
+  "repository": "git://github.com/node-webot/webot.git",
+  "description": "An easy-to-use robot for web service.",
+  "author": "Jesse Yang <kissmud@gmail.com> (https://github.com/ktmud)",
+  "dependencies": {
+    "debug": "~0.7.2"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  },
+  "engines": {
+    "node" : ">=0.6.0",
+    "npm" : ">=1.1.6"
+  },
+  "keywords": [
+    "robot",
+    "webot",
+    "express"
+  ],
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "license": "MIT"
+}
