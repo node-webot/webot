@@ -4,7 +4,7 @@ A web robot for node.js.
 
 With simple rules based on RegExp, you can easily set up your robot for web service usages.
 
-## Quick Start | [FAQ](https://github.com/node-webot/webot/wiki/FAQ)
+## Quick Start
 
 ```javascript
 var express = require('express');
@@ -41,9 +41,35 @@ app.get('/webot', function(req, res, next) {
 
 # API Referrence
 
-## Webot (机器人)
+## Webot
 
-### set(pattern, handler, _[, replies]_)
+### webot.watch(app, _[options]_)
+
+#### options.sessionStore
+
+为用户 session 提供永久存储。需要定义 `get`, `set`, `destroy` 方法。
+
+#### options.path
+
+监控到什么路径。
+
+#### options.prop
+
+将解析后的数据存入到 `req` 和 `res` 的哪个属性，默认为 "webot_data" 。
+
+#### options.verify
+
+验证请求权限的 middleware 。默认直接 pass 。
+
+#### options.parser
+
+解析请求的 middleware ，默认直接返回 post body 。
+
+#### options.send
+
+将 res.webot_data 格式化并返回的 middleware ，默认直接输出为 JSON 。
+
+### webot.set(pattern, handler, _[, replies]_)
 
 新增回复规则
 
@@ -317,11 +343,9 @@ webot.set('guess my sex', {
 
 Request and response in one place, with session support enabled.
 
-### info.data(key, _[val]_)
+###　info.session
 
-暂存或获取用户信息。使用方法与 jquery 的 `data` 类似。
-默认存在内存里，服务重启后失效。
-如果提供了 session 配置，会存在 session 里。
+当使用了 `webot.watch` 来启动服务时，可以使用 session 支持。
 
 ### info.wait(rule)
 
@@ -333,7 +357,8 @@ Request and response in one place, with session support enabled.
 
 重试上次等待操作。一般在 `replies` 的 handler 里调用。
 
-以上两个方法为高级功能，具体用法请参看[示例](https://github.com/node-webot/webot-example)。
+以上两个方法均需要 session 支持。
+具体用法请参看[示例](https://github.com/node-webot/webot-example)。
 
 ## 命令行工具
 
