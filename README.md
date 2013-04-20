@@ -1,68 +1,45 @@
-# 微信公共帐号机器人(Weixin Robot) [![Build Status](https://api.travis-ci.org/ktmud/weixin-robot.png?branch=master)](https://travis-ci.org/ktmud/weixin-robot)
+# node webot [![Build Status](https://api.travis-ci.org/node-webot/webot.png?branch=master)](https://travis-ci.org/node-webot/webot)
 
-A node.js robot for wechat.
+A web robot for node.js.
 
-[微信公众平台](http://mp.weixin.qq.com/cgi-bin/indexpage?t=wxm-index&lang=zh_CN)提供的[开放信息接口](http://mp.weixin.qq.com/cgi-bin/indexpage?t=wxm-callbackapi-doc&lang=zh_CN)的自动回复系统，基于`node.js` 实现。
+With simple rules based on RegExp, you can easily set up your robot for web service usages.
 
-## 功能特色：
-
-1. 方便灵活的规则定义，轻松实现文本匹配流程控制
-2. 基于正则表达式的对话设定，配置简单，可以给一句话随机回复不同内容
-3. 支持等待后续操作模式，如可以提示用户“需要我执行xxx操作吗？”
-
-## 使用示例：
-
-请参考 [weixin-robot-example](https://github.com/ktmud/weixin-robot-example)
-的 [rules.js](https://github.com/ktmud/weixin-robot-example/blob/master/rules.js) 文件。
-
-添加微信帐号，试试效果：
-
-![豆瓣同城微信帐号二维码：douban-event](http://i.imgur.com/ijE19.jpg)
-![微信机器人测试帐号：webot-test](http://i.imgur.com/6IcAJgH.jpg)
-
-## 快速入门 | [FAQ](https://github.com/ktmud/weixin-robot/wiki/FAQ)
+## Quick Start | [FAQ](https://github.com/node-webot/webot/wiki/FAQ)
 
 ```javascript
 var express = require('express');
-var webot = require('weixin-robot');
+var webot = require('webot');
 
 var app = express();
 
-// 指定回复消息
-webot.set('hi', '你好');
+webot.set('hi', "Hi, I'm Webot.");
 
 webot.set('subscribe', {
   pattern: function(info) {
     return info.event === 'subscribe';
   },
   handler: function(info) {
-    return '欢迎订阅微信机器人';
+    return 'Thank you for subscribe.';
   }
 });
 
-// 接管消息请求，第二个参数为你在微信后台填写的 token 地址
-webot.watch(app, 'your1weixin2token');
+app.get('/webot', function(req, res, next) {
+  var message = req.query.message;
 
-// 启动 Web 服务
-// 微信后台只允许 80 端口
-app.listen(80);
+  webot.reply({
+    text: message, 
+  }, function(err, info) {
+    if (err) return res.json({ r: err });
+    res.json({
+      r: 0,
+      reply: info.reply
+    });
+  });
+});
 
-// 如果你不想让 node 应用直接监听 80 端口
-// 可以尝试用 nginx 或 apache 自己做一层 proxy
-// app.listen(process.env.PORT);
-// app.enable('trust proxy');
 ```
 
-如果一切顺利，你也搭建好了自己的机器人，欢迎到[此项目的 Wiki 页面](https://github.com/ktmud/weixin-robot/wiki/%E4%BD%BF%E7%94%A8%E6%AD%A4%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%BE%AE%E4%BF%A1%E5%B8%90%E5%8F%B7)添加你的帐号。
-
-## 贡献代码
-
-欢迎直接 fork 并提交 pull request ，提交前请确保 make test 能通过。
-如果是新加功能，请补全测试用例。
-
-更欢迎直接[认领 issues](https://github.com/ktmud/weixin-robot/issues?state=open)。
-
-# API 参考
+# API Referrence
 
 ## Webot (机器人)
 
@@ -257,7 +234,7 @@ webot.set('pattern as fn', {
 - {String}    直接返回字符串
 - {Array}     从数组中随机取一个作为 handler
 - {Object}    尝试生成为单条图文消息
-- {Function}  执行函数获取返回值
+- {Function}  执行函数获取返回值，第一个参数为消息请求的 info 对象
 
 支持异步：
 
@@ -279,32 +256,7 @@ webot.set('search_database', {
 });
 ```
 
-handler 可用的返回值：
-
-  - {false|null|undefined|''}  进入下一条规则
-  - {String}                   回复为文本消息
-  - {Object}                   回复为图文消息
-  - {Array}                    回复为(多)图文消息
-
-### 星标消息
-
-微信允许你在回复消息时标记一个 `FuncFlag` ，可以在公共平台后台的「星标消息」中查看带标记的消息。
-适合你的机器人不懂如何回复用户消息时使用。
-你只需在 handler 中给 `info.flag` 赋值 `true` 即可。
-
-```javascript
-// 把这句放到你的规则的最末尾
-webot.set('fallback', {
-  pattern: /.*/,
-  handler: function(info) {
-    info.flag = true;
-    return ['唔.. 暂时听不懂您说的什么呢',
-    '不好意思，我不太懂您说的什么意思',
-    '哎呀，听不懂啦！', 
-    '这个我不是很懂，不如我们聊点别的吧？']
-  }
-});
-```
+在函数执行过程中，如果设置 `info.ended = true` ，则不会再继续下一条规则。 
 
 **注意**：`pattern` 并不支持异步，你可以把需要异步进行的 pattern 匹配
 视为一个 `handler` 。此时，你只需在定义规则时省略钓 `pattern` 定义即可。
@@ -361,145 +313,9 @@ webot.set('guess my sex', {
 });
 ```
 
-
 ## Info
 
-负责解析微信发来的消息，以及打包回复消息。
-
-### 请求消息属性
-
-与[微信官方文档](http://mp.weixin.qq.com/wiki/index.php?title=%E6%B6%88%E6%81%AF%E6%8E%A5%E5%8F%A3%E6%8C%87%E5%8D%97#.E6.B6.88.E6.81.AF.E6.8E.A8.E9.80.81)中的xml参数保持一致：
-
-    ToUserName      开发者微信号
-    FromUserName    发送方帐号（一个OpenID）
-    CreateTime      消息创建时间 （整型）
-    MsgId           消息id
-    MsgType         text / image / location / link / event
-
-    // MsgType == text
-    Content         文本消息内容
-
-    // MsgType == image
-    PicUrl          图片链接
-
-    // MsgType == location
-    Location_X      地理位置纬度
-    Location_Y      地理位置经度
-    Scale           地图缩放大小
-    Label  地理位置信息
-
-    // MsgType == link
-    Title           消息标题
-    Description     消息描述
-    Url             消息链接
-
-    // MsgType == event
-    Event           事件类型，subscribe(订阅)、unsubscribe(取消订阅)、CLICK(自定义菜单点击事件)
-    EventKey        事件KEY值，与自定义菜单接口中KEY值对应
-
-### info.reply
-
-给 `info.reply` 赋值后，即可调用 `info.toXML()` 方法把消息打包成回复给微信服务器的 XML 内容。
-一般来说，你只需在 `rule.handler` 的返回值或 callbak 里提供回复消息的内容，
-`webot.watch` 自带的 express 中间件（即 `webot.watch` ）会自动帮你完成打包操作。
-
-支持的数据类型：
-
-- {String}   直接回复文本消息，不能超过2048字节
-- {Object}   单条 图文消息/音乐消息
-- {Array}    多条图文消息
-
-#### 回复文本消息
-
-```javascript
-info.reply = '收到你的消息了，谢谢'
-```
-
-#### 回复图文消息
-
-    title        消息标题
-    url          消息网址
-    description  消息描述
-    picUrl       消息图片网址
-
-
-```javascript
-info = {
-  title: '消息标题',
-  url: 'http://example.com/...',
-  picUrl: 'http://example.com/....a.jpg',
-  description: '对消息的描述出现在这里',
-}
-
-// or
-
-info = [{
-  title: '消息1',
-  url: 'http://example.com/...',
-  picUrl: 'http://example.com/....a.jpg',
-  description: '对消息的描述出现在这里',
-}, {
-  title: '消息2',
-  url: 'http://example.com/...',
-  picUrl: 'http://example.com/....a.jpg',
-  description: '对消息的描述出现在这里',
-}]
-```
-
-### 回复音乐消息
-
-    url          音乐链接
-    hq_url       高质量音乐链接，wifi 环境下会优先使用该链接播放音乐
-
-需指定 `reply.type` 为 `'music'`：
-
-```javascript
-info.reply = {
-  type: 'music',
-  url: 'http://....x.mp3',
-  hq_url: 'http://....x.m4a'
-}
-```
-
-### info.flag
-
-是否标记为星标消息，可以在微信公共平台后台看到所有星标消息和星标用户分组。
-
-### info.toXML([mapping])
-
-根据 `info.reply` 打包回复消息为 XML 字符串。
-可选参数 `mapping` 指定如何对消息对象进行再包装。
-
-`mapping` 可以是：
-
-- {Function}  对每一条图文消息（item）都执行 `mapping(item, i, info)`
-- {Object}    标准属性值与回复对象属性值的对应关系
-
-如
-```javascript
-var mapping = {
-  pic: 'image',
-  description: 'desc'
-};
-
-var reply = {
-  title: '《奇迹之书》',
-  url: 'http://book.douban.com/...',
-  author: '谁谁谁',
-  desc: '本书由谁谁谁编写',
-  image: 'http://......'
-};
-
-// reply 会被标准化为
-{
-  title: '《奇迹之书》',
-  url: 'http://book.douban.com/...',
-  description: '本书由谁谁谁编写',
-  pic: 'http://......'
-};
-```
-
-非常适用于从第三方 API 取到的数据对象标准值和微信图文消息需要的不一样，但是又不想重新处理的情况。
+Request and response in one place, with session support enabled.
 
 ### info.data(key, _[val]_)
 
@@ -517,13 +333,12 @@ var reply = {
 
 重试上次等待操作。一般在 `replies` 的 handler 里调用。
 
-以上两个方法为高级功能，具体用法请参看[示例](https://github.com/ktmud/weixin-robot-example)。
-
+以上两个方法为高级功能，具体用法请参看[示例](https://github.com/node-webot/webot-example)。
 
 ## 命令行工具
 
 提供可执行文件 `webot` 用于发送测试消息。
-使用 `npm` 安装 [webot-cli](https://github.com/ktmud/webot-cli)：
+使用 `npm` 安装 [webot-cli](https://github.com/node-webot/webot-cli)：
 
     npm install webot-cli -g
 
