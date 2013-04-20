@@ -2,7 +2,8 @@
 
 A web robot for node.js.
 
-With simple rules based on RegExp, you can easily set up your robot for web service usages.
+With simple rules based on RegExp and custom functions,
+you can easily run a robot as web service.
 
 ## Quick Start
 
@@ -45,33 +46,33 @@ app.get('/webot', function(req, res, next) {
 
 ### webot.watch(app, _[options]_)
 
-#### options.sessionStore
+Add serveral standard middlewares to an express app. Including:
 
-为用户 session 提供永久存储。需要定义 `get`, `set`, `destroy` 方法。
+- **options.verify**:  to verify request. Default: always pass.
+- **options.parser**: to parse request post body. Default: use `req.body`.
+- **options.send**: to send reply. Default: use `res.json`.
+- **options.sessionStore**: the storage for webot sessions, just like express's cookieSession.
+- **options.path**: where to watch. Default: "/".
+- **options.prop**: `req` or `res`'s property name to attach parsed and replied data. Default: "webot_data".
 
-#### options.path
+The middleware layout would be:
 
-监控到什么路径。
-
-#### options.prop
-
-将解析后的数据存入到 `req` 和 `res` 的哪个属性，默认为 "webot_data" 。
-
-#### options.verify
-
-验证请求权限的 middleware 。默认直接 pass 。
-
-#### options.parser
-
-解析请求的 middleware ，默认直接返回 post body 。
-
-#### options.send
-
-将 res.webot_data 格式化并返回的 middleware ，默认直接输出为 JSON 。
+```javascript
+  app.get(path, verify);
+  app.post(path, verify, parser, self.session({
+    store: sessionStore,
+    prop: prop,
+  }), function(req, res, next) {
+    webot.reply(req[prop], function(err, info) {
+      res[prop] = info;
+      next();
+    });
+  }, send);
+```
 
 ### webot.set(pattern, handler, _[, replies]_)
 
-新增回复规则
+Add new reply rule.
 
 ```javascript
 webot.set(pattern, handler, replies)
@@ -178,9 +179,7 @@ hello:
   - how are you
 
 # 匹配组替换
-/key (.*)/i: 
-  - '你输入的匹配关键词是:{1}'
-  - '我知道了,你输入了:{1}'
+/key (.*)/i: '你输入了: {1}, \{1}这样写就不会被替换'
 
 # 也可以是一个rule定义；如果没有定义pattern，自动使用key
 yaml:
@@ -195,7 +194,7 @@ rule 定义的具体可用参数如下：
 
 ### options.name
 
-为规则命名，仅在在调试和后台查看（计划中）时有用。
+为规则命名，方便使用 `webot.get` 获取规则。
 
 ### options.pattern
  
@@ -313,7 +312,7 @@ webot.set('guess my sex', {
     '/.*/': function(info) {
       // 在 replies 的 handler 里可以获得等待回复的重试次数参数
       if (info.rewaitCount < 2) {
-        webot.rewait(info.user);
+        info.rewait();
         return '你到底还猜不猜嘛！';
       }
       return '看来你真的不想猜啊';
@@ -345,7 +344,7 @@ Request and response in one place, with session support enabled.
 
 ###　info.session
 
-当使用了 `webot.watch` 来启动服务时，可以使用 session 支持。
+当使用了 `webot.watch` 来启动服务时，可以获得 session 支持。
 
 ### info.wait(rule)
 
