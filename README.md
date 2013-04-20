@@ -127,6 +127,8 @@ webot.set({
 Set a wait rule for `info.wait` to use. Must provide a valid `name`.
 If handler not presented, try get the wait rule with that name.
 
+`等待规则` 即只在等待用户回复时才执行的规则。
+
 ### dialog(file1, _[file2, ...]_)
 
 增加对话规则
