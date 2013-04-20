@@ -120,6 +120,13 @@ webot.set({
 });
 ```
 
+有关 `replies` 的使用，请参考 [rule.replies](#rule-replies) 。
+
+### webot.waitRule(name, [handler])
+
+Set a wait rule for `info.wait` to use. Must provide a valid `name`.
+If handler not presented, try get the wait rule with that name.
+
 ### dialog(file1, _[file2, ...]_)
 
 增加对话规则
@@ -296,7 +303,7 @@ webot.set('test', function(info, next) {
 });
 ```
 
-### options.replies
+### options.replies <a id="#rule-replies"></a>
 
 指定如何**再次回复用户的回复**。即用户回复了根据当前规则回复的消息后，如何继续对话。
 
