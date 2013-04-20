@@ -120,7 +120,7 @@ webot.set({
 });
 ```
 
-有关 `replies` 的使用，请参考 [rule.replies](#rule-replies) 。
+有关 `replies` 的使用，请参考 [rule.replies](#optionsreplies) 。
 
 ### webot.waitRule(name, [handler])
 
@@ -305,9 +305,10 @@ webot.set('test', function(info, next) {
 });
 ```
 
-### options.replies <a id="#rule-replies"></a>
+### options.replies
 
 指定如何**再次回复用户的回复**。即用户回复了根据当前规则回复的消息后，如何继续对话。
+必须先配置 `session` 支持。
 
 ```javascript
 webot.set('guess my sex', {
@@ -351,9 +352,9 @@ webot.set('guess my sex', {
 
 Request and response in one place, with session support enabled.
 
-###　info.session
+### info.session
 
-当使用了 `webot.watch` 来启动服务时，可以获得 session 支持。
+当你在你的 express 中间件中为 `info` 加入了 `session` 支持，即可使用等待操作的高级功能。
 
 ### info.wait(rule)
 
