@@ -138,7 +138,16 @@ If handler not presented, try get the wait rule with that name.
 
 `等待规则` 即只在等待用户回复时才执行的规则。
 
-### dialog(file1, _[file2, ...]_)
+### webot.use(fn)
+
+Add preprocess middleware. `fn(info, next)` will be called every time
+a new `webot.reply` is called.
+
+### webot.get(ruleName)
+
+Get a rule based on its name. `ruleName` must be a string.
+
+### webot.dialog(file1, _[file2, ...]_)
 
 增加对话规则
 
