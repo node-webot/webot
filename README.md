@@ -98,11 +98,20 @@ webot.set('rule A', {
 
 // webot.get('rule A') 即可获得刚才定义的规则
 
-// 可以省略 rule name ,
-// 直接用 match pattern 当名字
+// 可以省略第二个参数里的 pattern ,
+// 则规则名会被转换为一个用于匹配的正则
 webot.set('你好', function() {
   // 随机回复一句话
   return ['你也好', '你好', '很高兴认识你'];
+});
+
+// 更简单地
+webot.set('你好', ['你也好', '你好', '很高兴认识你']);
+
+// 如果 handler 是一个 object ，也会直接作为 reply 返回
+webot.set('test music message', {
+  type: 'music',
+  url: 'http://example.com/a.mp3'
 });
 ```
 
@@ -171,7 +180,7 @@ In your `app.js`:
 ```javascript
 require('js-yaml');
 
-webot.dialog('./rules/abc.yaml');
+webot.dialog(__dirname__ + './rules/abc.yaml');
 ```
 
 In `rules/abc.yaml`:
@@ -267,7 +276,7 @@ webot.set('pattern as fn', {
 
 - {String}    直接返回字符串
 - {Array}     从数组中随机取一个作为 handler
-- {Object}    尝试生成为单条图文消息
+- {Object}    直接返回
 - {Function}  执行函数获取返回值，第一个参数为消息请求的 info 对象
 
 支持异步：
@@ -308,7 +317,7 @@ webot.set('test', function(info, next) {
 ### options.replies
 
 指定如何**再次回复用户的回复**。即用户回复了根据当前规则回复的消息后，如何继续对话。
-必须先配置 `session` 支持。
+必须先配置 [session支持](#session-support)。
 
 ```javascript
 webot.set('guess my sex', {
@@ -368,6 +377,10 @@ Request and response in one place, with session support enabled.
 
 以上两个方法均需要 session 支持。
 具体用法请参看[示例](https://github.com/node-webot/webot-example)。
+
+## Session Support
+
+TODO: 待完善
 
 ## 命令行工具
 
