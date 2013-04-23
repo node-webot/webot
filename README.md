@@ -44,32 +44,6 @@ app.get('/webot', function(req, res, next) {
 
 ## Webot
 
-### webot.watch(app, _[options]_)
-
-Add serveral standard middlewares to an express app. Including:
-
-- **options.verify**:  to verify request. Default: always pass.
-- **options.parser**: to parse request post body. Default: use `req.body`.
-- **options.send**: to send reply. Default: use `res.json`.
-- **options.sessionStore**: the storage for webot sessions, just like express's cookieSession.
-- **options.path**: where to watch. Default: "/".
-- **options.prop**: `req` or `res`'s property name to attach parsed and replied data. Default: "webot_data".
-
-The middleware layout would be:
-
-```javascript
-  app.get(path, verify);
-  app.post(path, verify, parser, self.session({
-    store: sessionStore,
-    prop: prop,
-  }), function(req, res, next) {
-    webot.reply(req[prop], function(err, info) {
-      res[prop] = info;
-      next();
-    });
-  }, send);
-```
-
 ### webot.set(pattern, handler, _[, replies]_)
 
 Add new reply rule.
@@ -215,6 +189,29 @@ hello:
 yaml:
   name: 'test_yaml_object'
   handler: '这是一个yaml的object配置'
+```
+
+### webot.watch(app, _[options]_)
+
+Add serveral standard middlewares to an express app. Including:
+
+- **options.verify**:  to verify request. Default: always pass.
+- **options.parser**: to parse request post body. Default: use `req.body`.
+- **options.send**: to send reply. Default: use `res.json`.
+- **options.sessionStore**: the storage for webot sessions, just like express's cookieSession.
+- **options.path**: where to watch. Default: "/".
+- **options.prop**: `req` or `res`'s property name to attach parsed and replied data. Default: "webot_data".
+
+The middleware layout would be:
+
+```javascript
+  app.get(path, verify);
+  app.post(path, verify, parser, function(req, res, next) {
+    webot.reply(req[prop], function(err, info) {
+      res[prop] = info;
+      next();
+    });
+  }, send);
 ```
 
 ## Rule(options)
