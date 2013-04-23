@@ -131,6 +131,10 @@ webot.set({
 
 有关 `replies` 的使用，请参考 [rule.replies](#optionsreplies) 。
 
+### webot.get(ruleName)
+
+Get a rule based on its name. `ruleName` must be a string.
+
 ### webot.waitRule(name, [handler])
 
 Set a wait rule for `info.wait` to use. Must provide a valid `name`.
@@ -138,14 +142,13 @@ If handler not presented, try get the wait rule with that name.
 
 `等待规则` 即只在等待用户回复时才执行的规则。
 
-### webot.use(fn)
+### webot.beforeReply()
 
-Add preprocess middleware. `fn(info, next)` will be called every time
-a new `webot.reply` is called.
+Add a preprocess rule. `rule.handler` will be called every time before checking reply rules.
 
-### webot.get(ruleName)
+### webot.afterReply()
 
-Get a rule based on its name. `ruleName` must be a string.
+Add a post-repy rule. `rule.handler` will be called every time after a reply is got.
 
 ### webot.dialog(file1, _[file2, ...]_)
 
@@ -268,7 +271,7 @@ webot.set('/(good\s*)morning/i', '早上好，先生');
 // 可以接受 function
 webot.set('pattern as fn', {
   pattern: function(info){
-    return info.eventKey === 'subscribe';
+    return info.param.eventKey === 'subscribe';
   },
   handler: '你好，欢迎关注我'
 });
@@ -386,6 +389,10 @@ Request and response in one place, with session support enabled.
 
 以上两个方法均需要 session 支持。
 具体用法请参看[示例](https://github.com/node-webot/webot-example)。
+
+### info.err
+
+Each time we got an error from `rule.handler`, `info.err` will be updated. The last error will always stay there.
 
 ## Session Support
 
