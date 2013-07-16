@@ -28,7 +28,7 @@ app.get('/webot', function(req, res, next) {
   var message = req.query.message;
 
   webot.reply({
-    text: message, 
+    text: message,
   }, function(err, info) {
     if (err) return res.json({ r: err });
     res.json({
@@ -51,7 +51,7 @@ Add new reply rule.
 ```javascript
 webot.set(pattern, handler, replies)
 
-// or 
+// or
 
 webot.set({
   name: 'rule name',
@@ -90,7 +90,7 @@ webot.set('test music message', {
 ```
 
 你甚至还可以直接传入一个 Object ，
-其 key 为 pattern ， value 为 handler 
+其 key 为 pattern ， value 为 handler
 （只要里面不包括 'handler' 这个 key）：
 
 ```javascript
@@ -177,7 +177,7 @@ In `rules/abc.yaml`:
 hi: 'hi,I am robot'
 
 # 随机回复一个
-hello: 
+hello:
   - 你好
   - fine
   - how are you
@@ -224,13 +224,13 @@ rule 定义的具体可用参数如下：
 为规则命名，方便使用 `webot.get` 获取规则。
 
 ### options.pattern
- 
+
 匹配用户发送的消息的方法。如果为正则表达式和字符串，
 则只在用户发送的时文本消息时才匹配。
 
 所有支持的格式：
- 
-- {String}   如果是潜在的 RegExp （如 '/abc/igm' ），会被转为 RegExp，如果以 '#' 打头，则完全匹配，否则模糊匹配
+
+- {String}   如果是潜在的 RegExp （如 '/abc/igm' ），会被转为 RegExp，如果以 '=' 打头，则完全匹配，否则模糊匹配
 - {RegExp}   仅匹配文本消息正则式，匹配到的捕获组会被赋值给 info.param
 - {Function} 只接受一个参数 info ，返回布尔值，可用以处理特殊类型的消息
 - {NULL}     为空则视为通过匹配
@@ -262,7 +262,7 @@ webot.set('your name', {
   handler: '你好,{1}'
 });
 
-// 类正则的字符串会被还原为正则 
+// 类正则的字符串会被还原为正则
 webot.set('/(good\s*)morning/i', '早上好，先生');
 
 // 可以接受 function
@@ -308,7 +308,7 @@ webot.set('search_database', {
 });
 ```
 
-在函数执行过程中，如果设置 `info.ended = true` ，则不会再继续下一条规则。 
+在函数执行过程中，如果设置 `info.ended = true` ，则不会再继续下一条规则。
 
 **注意**：`pattern` 并不支持异步，你可以把需要异步进行的 pattern 匹配
 视为一个 `handler` 。此时，你只需在定义规则时省略钓 `pattern` 定义即可。
@@ -346,7 +346,7 @@ webot.set('guess my sex', {
       return '看来你真的不想猜啊';
     },
   }
-  
+
   // 也可以用一个函数搞定:
   // replies: function(info){
   //   return '嘻嘻，不告诉你'
