@@ -1,0 +1,6 @@
+{
+  "haha_1": ["hello", "haha"],
+  "haha_2": "hehe..",
+  "/match (.*)/i": "{1}",
+  "/match2 (.*)/i": "return {1}"
+}
