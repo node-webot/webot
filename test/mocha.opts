@@ -3,4 +3,4 @@
 --ui bdd
 --growl
 --slow 500
---timeout 10000
+--timeout 2000
