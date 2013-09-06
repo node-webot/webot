@@ -24,7 +24,7 @@
     "express"
   ],
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha"
+    "test": "./node_modules/.bin/mocha"
   },
   "license": "MIT"
 }
