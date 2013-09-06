@@ -2,5 +2,5 @@
 --reporter spec
 --ui bdd
 --growl
---slow 500
---timeout 10000
+--slow 200
+--timeout 1000

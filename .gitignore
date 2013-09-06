@@ -1,4 +1,7 @@
 node_modules/
+coverage/
 *.swp
 .DS_Store
 examples
+*.bak
+.*.js

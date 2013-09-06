@@ -9,7 +9,8 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "should": "*"
+    "should": "*",
+    "async": "*"
   },
   "engines": {
     "node" : ">=0.6.0",
@@ -23,7 +24,7 @@
     "express"
   ],
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha"
+    "test": "./node_modules/.bin/mocha"
   },
   "license": "MIT"
 }
