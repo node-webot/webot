@@ -124,6 +124,35 @@ Add a preprocess rule. `rule.handler` will be called every time before checking 
 
 Add a post-repy rule. `rule.handler` will be called every time after a reply is got.
 
+### webot.domain(pattern, handler, replies)
+
+Add domain specified rule, middlewares for groups of rules.
+
+Example:
+
+```javascript
+webot.domain('domain-1', function require_user(info) {
+  if (!info.user) {
+    return 'Must login first';
+  }
+});
+
+webot.set('domain-1 act-1', {
+  domain: 'domain-1',
+  pattern: /some pattern/,
+  handler: function()..
+});
+
+webot.set('domain-1 act-2', {
+  domain: 'domain-1',
+  pattern: /another pattern/,
+  handler: function()..
+});
+```
+
+So when `/some pattern/` and `/another pattern/` is matched, webot will run into the `domain-1` middleware first,
+to check whether user is logged in.
+
 ### webot.dialog(file1, _[file2, ...]_)
 
 增加对话规则
@@ -231,7 +260,7 @@ rule 定义的具体可用参数如下：
 所有支持的格式：
 
 - {String}   如果是潜在的 RegExp （如 '/abc/igm' ），会被转为 RegExp，如果以 '=' 打头，则完全匹配，否则模糊匹配
-- {RegExp}   仅匹配文本消息正则式，匹配到的捕获组会被赋值给 info.param
+- {RegExp}   仅匹配文本消息正则式，匹配到的捕获组会被赋予 `info.param` ，可通过 `info.param[1]`, `info.param[2]`.. 获取
 - {Function} 只接受一个参数 info ，返回布尔值，可用以处理特殊类型的消息
 - {NULL}     为空则视为通过匹配
 
@@ -259,7 +288,11 @@ webot.set('Exact match', {
 // 利用正则来匹配
 webot.set('your name', {
   pattern: /^(?:my name is|i am|我(?:的名字)?(?:是|叫)?)\s*(.*)$/i,
-  handler: '你好,{1}'
+  handler: function(info) {
+    return '你好，' + info.param[1];
+  }, 
+  // 或者直接返回字符串，webot 会自动替换匹配关键字
+  // handler: '你好，{1}'
 });
 
 // 类正则的字符串会被还原为正则

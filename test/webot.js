@@ -300,6 +300,83 @@ describe('webot', function() {
     });
   });
 
+  describe('domain rule', function() {
+    var info;
+
+    before(function() {
+      robot.domain('domain_1', function(info) {
+        if (!info.my_user_id) {
+          return 'please login first';
+        }
+        info._in_domain_1 = true;
+      });
+      robot.set({
+        domain: 'domain_1',
+        pattern: 'my profile',
+        handler: function(info) {
+          return 'user_id: ' + info.my_user_id;
+        }
+      });
+      robot.set({
+        domain: 'domain_1',
+        pattern: 'my id',
+        handler: function(info) {
+          return info.my_user_id;
+        }
+      });
+      robot.set({
+        pattern: 'outside domain',
+        handler: function(info) {
+          return 'this is outside';
+        }
+      });
+    });
+
+    beforeEach(function() {
+      info = webot.Info();
+    });
+
+    it('should exit from domain 1', function(done) {
+      info.my_user_id = null;
+      info.text = 'my profile';
+      reply(info, function(err, info) {
+        info.reply.should.include('please login');
+        done();
+      });
+    });
+
+    it('should run into domain A', function(done) {
+      info.my_user_id = 'me';
+      info.text = 'my profile';
+      reply(info, function(err, info) {
+        should.equal(info.reply, 'user_id: me');
+        should.equal(info._in_domain_1, true);
+        done();
+      });
+    });
+
+    it('should run into domain B', function(done) {
+      info.my_user_id = 'meme';
+      info.text = 'my id';
+      reply(info, function(err, info) {
+        should.equal(info.reply, 'meme');
+        should.equal(info._in_domain_1, true);
+        done();
+      });
+    });
+
+
+    it('should not run into domain', function(done) {
+      info.my_user_id = 'me';
+      info.text = 'domain_2';
+      reply(info, function(err, info) {
+        info.should.not.have.property('_in_domain_1');
+        done();
+      });
+    });
+
+  });
+
   describe('afterReply', function() {
     it('should do after reply', function(done) {
       robot.afterReply(function(info){
