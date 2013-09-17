@@ -25,7 +25,7 @@ describe('webot module', function() {
 
 describe('webot', function() {
 
-  var robot = webot.Webot();
+  var robot = webot.Webot(), robot2 = webot.Webot();
 
   function reply(info, callback) {
     if (typeof info === 'string') {
@@ -75,15 +75,16 @@ describe('webot', function() {
   });
 
   describe('dialog', function() {
-    var file = __dirname + '/dialog.json';
+    var filename = 'dialog.json';
+    var full_filename = __dirname + '/' + filename;
     it('should load all', function() {
-      robot.dialog(file);
+      robot.dialog(filename);
       should.exist(robot.get('dialog_haha_1'));
       should.exist(robot.get('dialog_haha_2'));
     });
     it('should pick one from list', function(done) {
       reply('haha_1', function(err, info) {
-        require(file)['haha_1'].should.include(info.reply);
+        require(full_filename)['haha_1'].should.include(info.reply);
         done();
       });
     });
@@ -98,6 +99,22 @@ describe('webot', function() {
         should.equal(info.reply, 'return ABC');
         done();
       });
+    });
+  });
+
+  describe('loads', function() {
+    it('should pass *args', function() {
+      robot.loads('rules/a', 'rules/b');
+      should.exist(robot.get('/^a$/'));
+      should.exist(robot.get('rules/b'));
+    });
+    it('should pass Array args', function() {
+      robot2.loads(['rules/a']);
+    });
+    it('should pass full path', function() {
+      var fullpath = __dirname + '/rules/b';
+      robot2.loads(fullpath);
+      should.exist(robot2.get('rules/b'));
     });
   });
 
