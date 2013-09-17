@@ -153,6 +153,40 @@ webot.set('domain-1 act-2', {
 So when `/some pattern/` and `/another pattern/` is matched, webot will run into the `domain-1` middleware first,
 to check whether user is logged in.
 
+### webot.loads(file1, _[file2, ...]_)
+
+载入 nodejs 模块作为 webot 的回复规则，以方便你在比较复杂的项目中组织文件。
+
+file1, file2 是相对于调用此方法的文件所在目录的文件名。
+
+
+```javascript
+webot.loads('./rules/a', './rules.b');
+```
+
+In file `./rules/a.js` and `./rules/b.js`:
+
+```javascript
+module.exports = function(webot) {
+  webot.set('rule_a', function(info, next) {
+    // ...
+  });
+  webot.set('rule_a_1', 'some reply');
+};
+```
+
+or use single Rule defination:
+
+```
+module.exports = {
+  pattern: /some pattern/,
+  handler: function(info, next) {
+    // ...
+  },
+};
+```
+
+
 ### webot.dialog(file1, _[file2, ...]_)
 
 增加对话规则
@@ -195,7 +229,7 @@ In your `app.js`:
 ```javascript
 require('js-yaml');
 
-webot.dialog(__dirname__ + './rules/abc.yaml');
+webot.dialog('./rules/abc.yaml');
 ```
 
 In `rules/abc.yaml`:
