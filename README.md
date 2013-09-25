@@ -324,7 +324,7 @@ webot.set('your name', {
   pattern: /^(?:my name is|i am|我(?:的名字)?(?:是|叫)?)\s*(.*)$/i,
   handler: function(info) {
     return '你好，' + info.param[1];
-  }, 
+  },
   // 或者直接返回字符串，webot 会自动替换匹配关键字
   // handler: '你好，{1}'
 });
@@ -432,6 +432,9 @@ webot.set('guess my sex', {
   // }]
 });
 ```
+
+### webot.reset
+调用webot.reset可以重置webot中的设置，以方便重新set rule
 
 ## Info
 
