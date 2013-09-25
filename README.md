@@ -254,6 +254,11 @@ yaml:
   handler: '这是一个yaml的object配置'
 ```
 
+### webot.reset()
+
+Reset all rules, so your can reload rules when app is running.
+
+
 ### webot.watch(app, _[options]_)
 
 Add serveral standard middlewares to an express app. Including:
@@ -432,9 +437,6 @@ webot.set('guess my sex', {
   // }]
 });
 ```
-
-### webot.reset
-调用webot.reset可以重置webot中的设置，以方便重新set rule
 
 ## Info
 
