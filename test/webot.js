@@ -413,4 +413,36 @@ describe('webot', function() {
     });
   });
 
+  function isEmpty(obj) {
+    for(var i in obj) {
+      if(obj.hasOwnProperty(i)) return false;
+    }
+    return true;
+  }
+
+  describe('reset', function() {
+    it('should reset', function(done) {
+      robot.reset();
+      robot.routes.should.be.empty
+      robot.befores.should.be.empty
+      robot.afters.should.be.empty
+      isEmpty(robot.waits).should.be.true
+      isEmpty(robot.domain_rules).should.be.true
+      done();
+    });
+
+    it('set should work after reset', function(done) {
+      robot.reset();
+      robot.set(function(info) {
+        return info.text == 'func';
+      }, function(info, next) {
+        next(null, 'func' + info.text);
+      });
+      var rule = robot.routes.slice(-1)[0];
+      rule.pattern.should.be.a('function');
+      rule.handler.should.have.lengthOf(2);
+      done();
+    });
+  });
+
 });
