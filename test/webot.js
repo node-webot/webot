@@ -413,21 +413,14 @@ describe('webot', function() {
     });
   });
 
-  function isEmpty(obj) {
-    for(var i in obj) {
-      if(obj.hasOwnProperty(i)) return false;
-    }
-    return true;
-  }
-
   describe('reset', function() {
     it('should reset', function(done) {
       robot.reset();
-      robot.routes.should.be.empty
-      robot.befores.should.be.empty
-      robot.afters.should.be.empty
-      isEmpty(robot.waits).should.be.true
-      isEmpty(robot.domain_rules).should.be.true
+      robot.routes.should.be.empty;
+      robot.befores.should.be.empty;
+      robot.afters.should.be.empty;
+      Object.keys(robot.waits).should.be.empty;
+      Object.keys(robot.domain_rules).should.be.empty;
       done();
     });
 
