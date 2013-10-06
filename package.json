@@ -1,6 +1,6 @@
 {
   "name": "webot",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "repository": "git://github.com/node-webot/webot.git",
   "description": "An easy-to-use robot for web service.",
   "author": "Jesse Yang <kissmud@gmail.com> (https://github.com/ktmud)",
