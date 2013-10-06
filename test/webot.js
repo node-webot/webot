@@ -40,6 +40,17 @@ describe('webot', function() {
       try { robot.set(); } catch (e) { err = e; }
       should.exist(err);
     });
+    it('should set multiple rule', function() {
+      robot.reset();
+      robot.set({
+        '你好':  function() {
+          // 随机回复一句话
+          return ['你也好', '你好', '很高兴认识你'];
+        },
+        '你是谁': '我是你的小天使呀'
+      });
+      robot.routes.should.have.lengthOf(2);
+    });
     it('should handle function', function() {
       robot.set(function(info) {
         return info.text == 'func';
@@ -434,6 +445,42 @@ describe('webot', function() {
       var rule = robot.routes.slice(-1)[0];
       rule.pattern.should.be.a('function');
       rule.handler.should.have.lengthOf(2);
+      done();
+    });
+  });
+
+  describe('delete', function() {
+    it('should delete', function(done) {
+      robot.reset();
+      robot.set('rule1', {
+        pattern: 'hi',
+        handler: function(info) {
+          info.reply = 'hi';
+        }
+      });
+      robot.delete('rule1');
+      robot.routes.should.have.lengthOf(0);
+      done();
+    });
+  });
+
+  describe('update', function() {
+    it('should update', function(done) {
+      robot.reset();
+      robot.set('rule1', {
+        pattern: 'hi',
+        handler: function(info) {
+          info.reply = 'hi';
+        }
+      });
+      robot.update('rule1', {
+        pattern: 'hello',
+        handler: function(info) {
+          info.reply = 'hello';
+        }
+      });
+      var rule = robot.routes.slice(-1)[0];
+      rule.pattern.toString().should.equal('/hello/');
       done();
     });
   });
