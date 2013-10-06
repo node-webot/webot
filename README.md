@@ -103,6 +103,21 @@ webot.set({
 });
 ```
 
+你可以根据rule的名字动态的删除一个rule，
+```javascript
+webot.delete('rule1');
+```
+
+你可以根据rule的名字动态的更新rule，参数和set方法的参数一致
+```javascript
+robot.update('rule1', {
+  pattern: 'hello',
+  handler: function(info) {
+    info.reply = 'hello';
+  }
+});
+```
+
 有关 `replies` 的使用，请参考 [rule.replies](#optionsreplies) 。
 
 ### webot.get(ruleName)
