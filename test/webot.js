@@ -35,6 +35,9 @@ describe('webot', function() {
   }
 
   describe('set', function() {
+
+    var reply1 = ['你也好', '你好', '很高兴认识你'];
+
     it('should raise exception when no arguments', function() {
       var err;
       try { robot.set(); } catch (e) { err = e; }
@@ -45,11 +48,17 @@ describe('webot', function() {
       robot.set({
         '你好':  function() {
           // 随机回复一句话
-          return ['你也好', '你好', '很高兴认识你'];
+          return reply1;
         },
         '你是谁': '我是你的小天使呀'
       });
       robot.routes.should.have.lengthOf(2);
+    });
+    it('should handle list reply', function(done) {
+      reply('你好', function(err, info) {
+        reply1.should.include(info.reply);
+        done();
+      });
     });
     it('should handle function', function() {
       robot.set(function(info) {
