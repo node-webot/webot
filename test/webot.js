@@ -67,7 +67,7 @@ describe('webot', function() {
         next(null, 'func' + info.text);
       });
       var rule = robot.routes.slice(-1)[0];
-      rule.pattern.should.be.a('function');
+      rule.pattern.should.have.type('function');
       rule.handler.should.have.lengthOf(2);
     });
     it('should handle object', function() {
@@ -439,8 +439,8 @@ describe('webot', function() {
       robot.routes.should.be.empty;
       robot.befores.should.be.empty;
       robot.afters.should.be.empty;
-      Object.keys(robot.waits).should.be.empty;
-      Object.keys(robot.domain_rules).should.be.empty;
+      robot.waits.should.be.empty;
+      robot.domain_rules.should.be.empty;
       done();
     });
 
@@ -452,7 +452,7 @@ describe('webot', function() {
         next(null, 'func' + info.text);
       });
       var rule = robot.routes.slice(-1)[0];
-      rule.pattern.should.be.a('function');
+      rule.pattern.should.have.type('function');
       rule.handler.should.have.lengthOf(2);
       done();
     });

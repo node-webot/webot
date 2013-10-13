@@ -8,9 +8,9 @@
     "debug": "~0.7.2"
   },
   "devDependencies": {
-    "mocha": "*",
-    "should": "*",
-    "async": "*"
+    "mocha": "~1.13.0",
+    "should": "~2.0.1",
+    "async": "~0.2.9"
   },
   "engines": {
     "node" : ">=0.6.0",
