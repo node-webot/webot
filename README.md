@@ -131,13 +131,28 @@ If handler not presented, try get the wait rule with that name.
 
 `等待规则` 即只在等待用户回复时才执行的规则。
 
-### webot.beforeReply()
+### webot.beforeReply(handler)
 
 Add a preprocess rule. `rule.handler` will be called every time before checking reply rules.
+
+预处理规则，可以对发来的消息进行预处理，比如从数据库取出用户等。
+
+```
+webot.beforeReply(function load_user(info, next) {
+  User.get(info.uid, function(err, user) {
+    if (err) return next(err);
+    info.user = user; // attach this user object to Info.
+    next();
+  });
+});
+```
 
 ### webot.afterReply()
 
 Add a post-repy rule. `rule.handler` will be called every time after a reply is got.
+
+获得回复内容或对消息再处理，比如[简繁转化](https://github.com/node-webot/webot-douban-event/blob/master/app.js#L72)。
+
 
 ### webot.domain(pattern, handler, replies)
 
@@ -308,15 +323,15 @@ rule 定义的具体可用参数如下：
 
 ### options.pattern
 
-匹配用户发送的消息的方法。如果为正则表达式和字符串，
-则只在用户发送的时文本消息时才匹配。
+消息匹配规则，用以判断是否对用户发送的消息进行回复。如果为正则表达式和字符串，
+则只匹配用户发送的文本消息（也就是 `info.text !== undefined` 的消息）。
 
 所有支持的格式：
 
-- {String}   如果是潜在的 RegExp （如 '/abc/igm' ），会被转为 RegExp，如果以 '=' 打头，则完全匹配，否则模糊匹配
-- {RegExp}   仅匹配文本消息正则式，匹配到的捕获组会被赋予 `info.param` ，可通过 `info.param[1]`, `info.param[2]`.. 获取
-- {Function} 只接受一个参数 info ，返回布尔值，可用以处理特殊类型的消息
-- {NULL}     为空则视为通过匹配
+- {String}   如果是潜在的 RegExp （如字符串 '/abc/igm' ），会被转为 RegExp，如果以 '=' 打头，则完全匹配，否则模糊匹配
+- {RegExp}   正则表达式，匹配到的捕获组会被赋予 `info.param` ，可通过 `info.param[1]`, `info.param[2]`.. 获取
+- {Function} 该函数只接受一个参数 `info` ，返回布尔值
+- {NULL}     不指定 pattern ，则视为通过匹配，此 Rule 的 handler 将总是会执行
 
 示例：
 
@@ -333,7 +348,7 @@ webot.set('Blur match', {
   handler: '是的，我就是一名光荣的机器人'
 });
 
-// 当字符串 pattern 以 "=" 开头时，需要完全匹配
+// 当字符串 pattern 以 "=" 开头时，则会完全匹配
 webot.set('Exact match', {
   pattern: '=a',
   handler: '只有回复「a」时才会看到本消息'
@@ -395,20 +410,58 @@ webot.set('search_database', {
 });
 ```
 
-在函数执行过程中，如果设置 `info.ended = true` ，则不会再继续下一条规则。
+在函数执行过程中，如果设置 `info.ended = true` ，即使没有返回可用的回复，也不会再继续下一条规则。
+此时会 fallback 到预设的 404 错误，参见 **webot.codeReplies**。
 
-**注意**：`pattern` 并不支持异步，你可以把需要异步进行的 pattern 匹配
-视为一个 `handler` 。此时，你只需在定义规则时省略钓 `pattern` 定义即可。
+
+**注意**：
+
+你是否注意到，`handler` 允许异步操作，而 `pattern` 却不可以？
+
+事实上，所有的 pattern 操作，都可以放到 `handler` 里执行：
 
 ```javascript
-webot.set('test', function(info, next) {
-  var uid = info.user;
-  User.findOne(uid, function(err, doc) {
-    if (!doc) return next();
-    return next(null, '欢迎，' + doc.name);
-  });
+webot.set('test_A', {
+  handler: function(info, next) {
+    if (info.text == 'A') {
+      next(null, 'You said A.');
+    }
+    next();
+  }
 });
 ```
+
+或者更省略一点：
+
+```
+webot.set(function test_A(info) {
+  if (info.text == 'A') {
+    return 'You said A.';
+  }
+});
+```
+
+所以，异步的匹配可以写成：
+
+```javascript
+webot.set('test', {
+  handler: function(info, next) {
+    var uid = info.uid;
+    User.findOne(uid, function(err, doc) {
+      if (!doc) {
+        // 异步判断失败，进入下一条规则
+        return next();
+      }
+      // 判断成功后需要执行的操作在这里
+      return next(null, '欢迎你，' + doc.name);
+    });
+  }
+});
+```
+
+相信你并不会太需要在匹配消息规则时也进行异步。
+事实上，很多需求都可以转化为使用 `webot.beforeReply` 。
+
 
 ### options.replies
 
