@@ -493,5 +493,59 @@ describe('webot', function() {
       done();
     });
   });
+  describe('delegate', function () {
+    var webot1, webot2, info, session;
 
+    // webot1 as root bot
+    function reply(info, fn) {
+      webot1.reply(info, fn);
+    }
+
+    before(function () {
+      info = webot.Info();
+      session = {};
+      info.session = {};
+
+      webot1 = new webot.Webot(),
+      webot2 = new webot.Webot();
+
+      webot1.set('hello', 'webot1');
+      webot1.set('webot2', function (info) {
+        info.delegate(webot2);
+        return 'to webot2';
+      });
+
+      webot2.set('hello', 'webot2');
+      webot2.set('exit', function (info) {
+        info.delegate();
+        return 'to parent';
+      });
+    });
+    it('should use rules from self by default', function () {
+      info.text = 'hello';
+      reply(info, function (err, info) {
+        info.reply.should.equal('webot1');
+      });
+    });
+    it('should use rules of target webot', function () {
+      info.text = 'webot2';
+      reply(info, function (err, info) {
+        info.reply.should.equal('to webot2');
+      });
+      info.text = 'hello';
+      reply(info, function (err, info) {
+        info.reply.should.equal('webot2');
+      });
+    });
+    it('should revert to parent rule', function () {
+      info.text = 'exit';
+      reply(info, function (err, info) {
+        info.reply.should.equal('to parent');
+      });
+      info.text = 'hello';
+      reply(info, function (err, info) {
+        info.reply.should.equal('webot1');
+      });
+    });
+  });
 });
