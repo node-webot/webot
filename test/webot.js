@@ -509,9 +509,10 @@ describe('webot', function() {
       webot1 = new webot.Webot(),
       webot2 = new webot.Webot();
 
+      webot1.waitBot('webot2', webot2);
       webot1.set('hello', 'webot1');
       webot1.set('webot2', function (info) {
-        info.delegate(webot2);
+        info.delegate('webot2');
         return 'to webot2';
       });
 
