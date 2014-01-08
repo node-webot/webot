@@ -494,4 +494,30 @@ describe('webot', function() {
     });
   });
 
+  describe('rule options', function () {
+    it ('should capture pattern of regexp in param', function (done) {
+      robot.reset();
+      robot.set('regexp capture', {
+        pattern: /^(?:my name is|i am|我(?:的名字)?(?:是|叫)?)\s*(.*)$/i,
+        handler: function(info) {
+          return '你好，' + info.param[1];
+        }
+      });
+      reply('my name is rogerz', function (err, info) {
+        info.reply.should.equal('你好，rogerz');
+        done();
+      });
+    });
+    it ('should substitute {*} in reply', function (done) {
+      robot.reset();
+      robot.set('regexp subst', {
+        pattern: /^(?:my name is|i am|我(?:的名字)?(?:是|叫)?)\s*(.*)$/i,
+        handler: '你好，{1}'
+      });
+      reply('my name is rogerz', function (err, info) {
+        info.reply.should.equal('你好，rogerz');
+        done();
+      });
+    });
+  });
 });
