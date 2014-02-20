@@ -1,11 +1,11 @@
 {
   "name": "webot",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "repository": "git://github.com/node-webot/webot.git",
   "description": "An easy-to-use robot for web service.",
   "author": "Jesse Yang <kissmud@gmail.com> (https://github.com/ktmud)",
   "dependencies": {
-    "debug": "~0.7.2"
+    "debug": "0.7.x"
   },
   "devDependencies": {
     "mocha": "~1.13.0",
