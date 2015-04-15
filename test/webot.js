@@ -467,8 +467,21 @@ describe('webot', function() {
           info.reply = 'hi';
         }
       });
-      robot.delete('rule1');
-      robot.routes.should.have.lengthOf(0);
+      robot.set('rule2', {
+        pattern: 'hi',
+        handler: function(info) {
+          info.reply = 'hi';
+        }
+      });
+      robot.set('rule3', {
+        pattern: 'hi',
+        handler: function(info) {
+          info.reply = 'hi';
+        }
+      });
+      robot.delete('rule2');
+      should.not.exist(robot.get('rule2'));
+      robot.routes.should.have.lengthOf(2);
       done();
     });
   });
